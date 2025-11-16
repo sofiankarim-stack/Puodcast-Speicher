@@ -32,7 +32,7 @@ export const getEpisodeAnalytics = (episodeId) => api.get(`/analytics/episode/${
 // Voices
 export const getVoices = () => api.get('/voices');
 
-// Music
+// Music & Media
 export const uploadMusic = (file, category) => {
   const formData = new FormData();
   formData.append('file', file);
@@ -43,5 +43,10 @@ export const uploadMusic = (file, category) => {
   });
 };
 export const getMusicLibrary = (category) => api.get('/music', { params: { category } });
+
+// Media Enhancement
+export const enhanceAudio = (data) => api.post('/media/enhance-audio', data);
+export const trimVideo = (fileId, trimStart, trimEnd) => 
+  api.post(`/media/trim-video/${fileId}?trim_start=${trimStart}&trim_end=${trimEnd}`);
 
 export default api;
