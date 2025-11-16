@@ -95,7 +95,7 @@ function MediaLibrary({ onSelectFile }) {
   };
 
   return (
-    <Box>
+    <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
       <Typography variant="h4" gutterBottom data-testid="media-library-title">
         Medien-Bibliothek
       </Typography>
