@@ -209,12 +209,12 @@ function EpisodeEditor() {
   }
 
   return (
-    <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
+    <Container maxWidth="lg" sx={{ mt: { xs: 2, md: 4 }, mb: { xs: 2, md: 4 }, px: { xs: 1, md: 3 } }}>
       <Box display="flex" alignItems="center" mb={3}>
         <IconButton onClick={() => navigate('/episodes')} sx={{ mr: 2 }}>
           <ArrowBackIcon />
         </IconButton>
-        <Typography variant="h3" data-testid="episode-editor-title">
+        <Typography variant="h3" data-testid="episode-editor-title" sx={{ fontSize: { xs: '1.5rem', md: '3rem' } }}>
           {isEdit ? 'Episode Bearbeiten' : 'Neue Episode'}
         </Typography>
       </Box>
