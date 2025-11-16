@@ -567,17 +567,15 @@ async def generate_shownotes(episode_id: str):
         Format: Markdown
         """
         
-        response = openai_client.chat.completions.create(
-            model="gpt-4",
-            messages=[
-                {"role": "system", "content": "Du bist ein Experte für Podcast-Shownotes."},
-                {"role": "user", "content": prompt}
-            ],
-            temperature=0.7,
-            max_tokens=800
-        )
+        # Use Emergent LLM integration
+        chat = LlmChat(
+            api_key=emergent_llm_key,
+            session_id=str(uuid.uuid4()),
+            system_message="Du bist ein Experte für Podcast-Shownotes."
+        ).with_model("openai", "gpt-4o-mini")
         
-        shownotes = response.choices[0].message.content
+        user_message = UserMessage(text=prompt)
+        shownotes = await chat.send_message(user_message)
         
         # Update episode with shownotes
         await db.episodes.update_one(
