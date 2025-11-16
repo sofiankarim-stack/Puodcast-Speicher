@@ -536,6 +536,36 @@ async def get_audio_file(filename: str):
     return FileResponse(audio_path, media_type="audio/mpeg")
 
 
+@api_router.get("/video/{filename}")
+async def get_video_file(filename: str):
+    """Serve video files"""
+    video_path = VIDEO_DIR / filename
+    if not video_path.exists():
+        raise HTTPException(status_code=404, detail="Video file not found")
+    return FileResponse(video_path, media_type="video/mp4")
+
+
+@api_router.get("/image/{filename}")
+async def get_image_file(filename: str):
+    """Serve image files"""
+    image_path = IMAGE_DIR / filename
+    if not image_path.exists():
+        raise HTTPException(status_code=404, detail="Image file not found")
+    
+    # Determine media type from extension
+    ext = image_path.suffix.lower()
+    media_types = {
+        '.jpg': 'image/jpeg',
+        '.jpeg': 'image/jpeg',
+        '.png': 'image/png',
+        '.gif': 'image/gif',
+        '.webp': 'image/webp',
+    }
+    media_type = media_types.get(ext, 'image/jpeg')
+    
+    return FileResponse(image_path, media_type=media_type)
+
+
 # ============================================================================
 # ChatGPT Integration (Smart Suggestions)
 # ============================================================================
