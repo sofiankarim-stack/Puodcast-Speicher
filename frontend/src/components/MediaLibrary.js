@@ -137,6 +137,35 @@ function MediaLibrary({ onSelectFile }) {
             <Grid item xs={12} sm={6} md={4} key={file.id}>
               <Card data-testid={`media-file-${file.id}`}>
                 <CardContent>
+                  {/* Thumbnail/Preview */}
+                  <Box
+                    sx={{
+                      width: '100%',
+                      height: 150,
+                      bgcolor: '#000',
+                      borderRadius: 1,
+                      mb: 2,
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      overflow: 'hidden',
+                    }}
+                  >
+                    {file.name?.toLowerCase().match(/\.(jpg|jpeg|png|gif|webp)$/) && (
+                      <img
+                        src={`${BACKEND_URL}${file.file_url}`}
+                        alt={file.name}
+                        style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                      />
+                    )}
+                    {file.name?.toLowerCase().match(/\.(mp4|mov|avi|webm)$/) && (
+                      <VideoIcon sx={{ fontSize: 60, color: 'secondary.main' }} />
+                    )}
+                    {file.name?.toLowerCase().match(/\.(mp3|wav|ogg|aac)$/) && (
+                      <AudioIcon sx={{ fontSize: 60, color: 'secondary.main' }} />
+                    )}
+                  </Box>
+                  
                   <Box display="flex" alignItems="center" gap={1} mb={2}>
                     {getFileIcon(file.name)}
                     <Typography variant="h6" noWrap sx={{ flexGrow: 1 }}>
