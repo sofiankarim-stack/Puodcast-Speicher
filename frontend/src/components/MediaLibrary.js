@@ -426,6 +426,8 @@ function MediaLibrary({ onSelectFile }) {
                   </Button>
                 </CardContent>
               </Card>
+              </Box>
+              )}
             </Box>
           )}
         </DialogContent>
