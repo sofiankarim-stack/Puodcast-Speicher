@@ -69,6 +69,17 @@ function Navbar() {
           >
             Medien
           </Button>
+          <Button
+            color="inherit"
+            startIcon={<PublishIcon />}
+            onClick={() => navigate('/distribution')}
+            sx={{
+              bgcolor: isActive('/distribution') ? 'rgba(255,255,255,0.1)' : 'transparent',
+            }}
+            data-testid="nav-distribution"
+          >
+            Veröffentlichen
+          </Button>
         </Box>
 
         <IconButton color="inherit" data-testid="nav-settings">
