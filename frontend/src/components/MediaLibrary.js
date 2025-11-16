@@ -290,7 +290,11 @@ function MediaLibrary({ onSelectFile }) {
                   )}
                 </Card>
               </Box>
+              )}
 
+              {/* Tab 1: Edit Section */}
+              {dialogTab === 1 && (
+              <Box>
               {/* Audio Editor */}
               {selectedFile.name?.toLowerCase().match(/\.(mp3|wav|ogg|aac)$/) && (
                 <Box mb={3}>
