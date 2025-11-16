@@ -78,13 +78,25 @@ function MediaLibrary({ onSelectFile }) {
   };
 
   const handleEnhance = async () => {
+    if (!selectedFile) return;
+    
     setMessage({ type: 'info', text: 'Audio wird optimiert...' });
     
-    // Simulate enhancement (in production, call backend API)
-    setTimeout(() => {
-      setMessage({ type: 'success', text: 'Audio-Qualität erfolgreich verbessert!' });
-      setEditDialogOpen(false);
-    }, 2000);
+    try {
+      const response = await enhanceAudio({
+        file_id: selectedFile.id,
+        ...enhanceSettings,
+      });
+      
+      setMessage({ type: 'success', text: response.data.message || 'Audio-Qualität erfolgreich verbessert!' });
+      loadFiles(); // Reload to show enhanced file
+      setTimeout(() => {
+        setEditDialogOpen(false);
+      }, 1500);
+    } catch (error) {
+      console.error('Enhancement error:', error);
+      setMessage({ type: 'error', text: 'Fehler bei der Audio-Optimierung' });
+    }
   };
 
   const formatFileSize = (bytes) => {
