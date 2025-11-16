@@ -141,9 +141,17 @@ class MusicFile(BaseModel):
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
     name: str
     file_url: str
-    category: str  # intro, outro, transition, background
+    category: str  # intro, outro, transition, background, episode
     duration: Optional[float] = None
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
+class AudioEnhanceRequest(BaseModel):
+    file_id: str
+    remove_noise: bool = True
+    normalize: bool = True
+    compression: float = 0.5
+    bass_boost: float = 0.0
+    treble_boost: float = 0.0
 
 
 # ============================================================================
