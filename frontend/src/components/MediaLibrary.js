@@ -212,14 +212,71 @@ function MediaLibrary({ onSelectFile }) {
         <DialogContent>
           {selectedFile && selectedFile.file_url && (
             <Box>
+              {/* Preview Section */}
+              <Box mb={3}>
+                <Typography variant="h6" gutterBottom>
+                  Vorschau
+                </Typography>
+                <Card sx={{ bgcolor: '#000', p: 2 }}>
+                  {/* Audio Preview */}
+                  {selectedFile.name?.toLowerCase().match(/\.(mp3|wav|ogg|aac|m4a)$/) && (
+                    <audio
+                      controls
+                      src={`${BACKEND_URL}${selectedFile.file_url}`}
+                      style={{ width: '100%' }}
+                      data-testid="audio-preview"
+                    />
+                  )}
+                  
+                  {/* Video Preview */}
+                  {selectedFile.name?.toLowerCase().match(/\.(mp4|mov|avi|webm)$/) && (
+                    <video
+                      controls
+                      src={`${BACKEND_URL}${selectedFile.file_url}`}
+                      style={{ width: '100%', maxHeight: '400px' }}
+                      data-testid="video-preview"
+                    />
+                  )}
+                  
+                  {/* Image Preview */}
+                  {selectedFile.name?.toLowerCase().match(/\.(jpg|jpeg|png|gif|webp)$/) && (
+                    <img
+                      src={`${BACKEND_URL}${selectedFile.file_url}`}
+                      alt={selectedFile.name}
+                      style={{ width: '100%', maxHeight: '400px', objectFit: 'contain' }}
+                      data-testid="image-preview"
+                    />
+                  )}
+                </Card>
+              </Box>
+
               {/* Audio Editor */}
               {selectedFile.name?.toLowerCase().match(/\.(mp3|wav|ogg|aac)$/) && (
                 <Box mb={3}>
+                  <Typography variant="h6" gutterBottom>
+                    Audio Bearbeiten
+                  </Typography>
                   <AudioEditor
                     audioUrl={`${BACKEND_URL}${selectedFile.file_url}`}
                     onSave={(regions) => {
                       console.log('Audio edits:', regions);
                       setMessage({ type: 'success', text: 'Änderungen gespeichert!' });
+                    }}
+                  />
+                </Box>
+              )}
+
+              {/* Video Editor */}
+              {selectedFile.name?.toLowerCase().match(/\.(mp4|mov|avi|webm)$/) && (
+                <Box mb={3}>
+                  <Typography variant="h6" gutterBottom>
+                    Video Bearbeiten
+                  </Typography>
+                  <VideoEditor
+                    videoUrl={`${BACKEND_URL}${selectedFile.file_url}`}
+                    onSave={(edits) => {
+                      console.log('Video edits:', edits);
+                      setMessage({ type: 'success', text: 'Video-Änderungen gespeichert!' });
                     }}
                   />
                 </Box>
