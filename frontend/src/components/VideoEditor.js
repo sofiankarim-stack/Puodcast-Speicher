@@ -199,9 +199,75 @@ function VideoEditor({ videoUrl, onSave }) {
             Ende setzen
           </Button>
 
+          {/* Manual Time Input */}
+          <Grid container spacing={2} sx={{ mt: 2 }}>
+            <Grid item xs={6}>
+              <TextField
+                label="Start (Sekunden)"
+                type="number"
+                value={trimStart}
+                onChange={(e) => setTrimStart(Math.max(0, parseFloat(e.target.value) || 0))}
+                fullWidth
+                size="small"
+                inputProps={{ step: 0.1, min: 0, max: duration }}
+                data-testid="manual-trim-start"
+              />
+            </Grid>
+            <Grid item xs={6}>
+              <TextField
+                label="Ende (Sekunden)"
+                type="number"
+                value={trimEnd}
+                onChange={(e) => setTrimEnd(Math.max(0, parseFloat(e.target.value) || 0))}
+                fullWidth
+                size="small"
+                inputProps={{ step: 0.1, min: 0, max: duration }}
+                data-testid="manual-trim-end"
+              />
+            </Grid>
+          </Grid>
+
           <Typography variant="body2" color="text.secondary" sx={{ mt: 2 }}>
-            Ausgewählte Dauer: {formatTime(trimEnd - trimStart)}
+            Ausgewählte Dauer: {formatTime(Math.max(0, trimEnd - trimStart))}
           </Typography>
+        </Card>
+
+        {/* Audio Mixing Controls */}
+        <Card sx={{ bgcolor: 'background.default', p: 2, mt: 2 }}>
+          <Typography variant="h6" gutterBottom>
+            Audio-Mixing
+          </Typography>
+          <Typography variant="body2" color="text.secondary" gutterBottom>
+            Passen Sie die Lautstärke von Musik und Stimme separat an
+          </Typography>
+          
+          <Box mt={2}>
+            <Typography gutterBottom>🎵 Musik-Lautstärke: {Math.round(musicVolume * 100)}%</Typography>
+            <Slider
+              value={musicVolume}
+              onChange={(e, val) => setMusicVolume(val)}
+              min={0}
+              max={1}
+              step={0.01}
+              valueLabelDisplay="auto"
+              valueLabelFormat={(val) => `${Math.round(val * 100)}%`}
+              data-testid="music-volume-slider"
+            />
+          </Box>
+
+          <Box mt={2}>
+            <Typography gutterBottom>🎤 Stimmen-Lautstärke: {Math.round(voiceVolume * 100)}%</Typography>
+            <Slider
+              value={voiceVolume}
+              onChange={(e, val) => setVoiceVolume(val)}
+              min={0}
+              max={2}
+              step={0.01}
+              valueLabelDisplay="auto"
+              valueLabelFormat={(val) => `${Math.round(val * 100)}%`}
+              data-testid="voice-volume-slider"
+            />
+          </Box>
         </Card>
 
         {/* Save Button */}
