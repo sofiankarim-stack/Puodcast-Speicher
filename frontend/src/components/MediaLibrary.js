@@ -326,7 +326,12 @@ function MediaLibrary({ onSelectFile }) {
                   />
                 </Box>
               )}
+              </Box>
+              )}
 
+              {/* Tab 2: Enhancement Settings */}
+              {dialogTab === 2 && (
+              <Box>
               {/* Enhancement Settings */}
               <Card sx={{ mt: 3 }}>
                 <CardContent>
