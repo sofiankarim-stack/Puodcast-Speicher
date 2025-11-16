@@ -28,8 +28,9 @@ import {
   Download as DownloadIcon,
   AutoFixHigh as EnhanceIcon,
 } from '@mui/icons-material';
-import { getMusicLibrary } from '../api';
+import { getMusicLibrary, enhanceAudio } from '../api';
 import AudioEditor from './AudioEditor';
+import VideoEditor from './VideoEditor';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 
