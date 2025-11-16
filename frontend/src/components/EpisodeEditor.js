@@ -406,19 +406,83 @@ function EpisodeEditor() {
           </Card>
         </Grid>
 
-        {/* Audio Preview */}
+        {/* Audio Preview & Editor Tabs */}
         {audioUrl && (
           <Grid item xs={12}>
             <Card>
               <CardContent>
-                <Typography variant="h5" gutterBottom>
-                  Audio Vorschau
-                </Typography>
-                <audio controls src={audioUrl} style={{ width: '100%' }} data-testid="audio-player" />
+                <Tabs value={currentTab} onChange={(e, val) => setCurrentTab(val)} sx={{ mb: 2 }}>
+                  <Tab label="Vorschau" icon={<VolumeIcon />} />
+                  <Tab label="Editor" icon={<EditIcon />} />
+                  <Tab label="Upload" icon={<UploadIcon />} />
+                </Tabs>
+
+                {/* Tab 0: Simple Preview */}
+                {currentTab === 0 && (
+                  <Box>
+                    <Typography variant="h6" gutterBottom>
+                      Audio Vorschau
+                    </Typography>
+                    <audio controls src={audioUrl} style={{ width: '100%' }} data-testid="audio-player" />
+                  </Box>
+                )}
+
+                {/* Tab 1: Audio Editor */}
+                {currentTab === 1 && (
+                  <AudioEditor
+                    audioUrl={audioUrl}
+                    onSave={(regions) => {
+                      console.log('Saving edits:', regions);
+                      setMessage({ type: 'success', text: 'Audio-Änderungen gespeichert!' });
+                    }}
+                  />
+                )}
+
+                {/* Tab 2: File Upload */}
+                {currentTab === 2 && (
+                  <FileUploader
+                    acceptedTypes={['audio', 'video', 'image']}
+                    category="episode"
+                    onFileUploaded={(file) => {
+                      setUploadedFiles([...uploadedFiles, file]);
+                      setMessage({ type: 'success', text: `Datei hochgeladen: ${file.name}` });
+                      // Set as audio URL if it's an audio file
+                      if (file.type.startsWith('audio')) {
+                        setAudioUrl(`${BACKEND_URL}${file.url}`);
+                      }
+                    }}
+                  />
+                )}
               </CardContent>
             </Card>
           </Grid>
         )}
+
+        {/* Upload Section (always visible) */}
+        <Grid item xs={12}>
+          <Card>
+            <CardContent>
+              <Typography variant="h5" gutterBottom>
+                Eigene Aufnahmen & Medien hochladen
+              </Typography>
+              <Typography variant="body2" color="text.secondary" gutterBottom sx={{ mb: 2 }}>
+                Laden Sie Ihre eigenen Interviews, Aufnahmen, Videos oder Bilder hoch
+              </Typography>
+              <FileUploader
+                acceptedTypes={['audio', 'video', 'image']}
+                category="episode"
+                onFileUploaded={(file) => {
+                  setUploadedFiles([...uploadedFiles, file]);
+                  setMessage({ type: 'success', text: `Datei hochgeladen: ${file.name}` });
+                  // Set as audio URL if it's an audio file
+                  if (file.type.startsWith('audio')) {
+                    setAudioUrl(`${BACKEND_URL}${file.url}`);
+                  }
+                }}
+              />
+            </CardContent>
+          </Card>
+        </Grid>
 
         {/* Action Buttons */}
         <Grid item xs={12}>
