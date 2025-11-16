@@ -27,6 +27,8 @@ function VideoEditor({ videoUrl, onSave }) {
   const [duration, setDuration] = useState(0);
   const [trimStart, setTrimStart] = useState(0);
   const [trimEnd, setTrimEnd] = useState(0);
+  const [musicVolume, setMusicVolume] = useState(0.5);
+  const [voiceVolume, setVoiceVolume] = useState(1.0);
 
   const handlePlayPause = () => {
     if (videoRef.current) {
