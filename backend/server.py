@@ -437,38 +437,55 @@ async def generate_episode_audio(episode_id: str):
             # Parse from text
             segments = parse_speaker_segments(episode['text_content'])
         
-        # Generate audio for each segment
-        audio_files = []
-        for i, segment in enumerate(segments):
-            voice_id = VOICE_MAPPING.get(segment['speaker'].lower(), VOICE_MAPPING["markus"])
+        # Try to generate audio with ElevenLabs
+        try:
+            audio_files = []
+            for i, segment in enumerate(segments):
+                voice_id = VOICE_MAPPING.get(segment['speaker'].lower(), VOICE_MAPPING["markus"])
+                
+                voice_settings = VoiceSettings(
+                    stability=episode.get('voice_settings', {}).get('stability', 0.75),
+                    similarity_boost=episode.get('voice_settings', {}).get('similarity_boost', 0.85),
+                    style=episode.get('voice_settings', {}).get('style', 0.0),
+                    use_speaker_boost=episode.get('voice_settings', {}).get('use_speaker_boost', True)
+                )
+                
+                logger.info(f"Generating segment {i+1}/{len(segments)} with voice: {segment['speaker']}")
+                audio_generator = elevenlabs_client.text_to_speech.convert(
+                    voice_id=voice_id,
+                    text=segment['text'],
+                    model_id="eleven_multilingual_v2",
+                    voice_settings=voice_settings
+                )
+                
+                segment_filename = f"{episode_id}_segment_{i}.mp3"
+                segment_path = AUDIO_DIR / segment_filename
+                
+                with open(segment_path, "wb") as audio_file:
+                    for chunk in audio_generator:
+                        audio_file.write(chunk)
+                
+                audio_files.append(segment_filename)
             
-            voice_settings = VoiceSettings(
-                stability=episode.get('voice_settings', {}).get('stability', 0.75),
-                similarity_boost=episode.get('voice_settings', {}).get('similarity_boost', 0.85),
-                style=episode.get('voice_settings', {}).get('style', 0.0),
-                use_speaker_boost=episode.get('voice_settings', {}).get('use_speaker_boost', True)
-            )
+            # For MVP, we'll return the first segment
+            final_audio_url = f"/api/audio/{audio_files[0]}" if audio_files else None
             
-            logger.info(f"Generating segment {i+1}/{len(segments)} with voice: {segment['speaker']}")
-            audio_generator = elevenlabs_client.text_to_speech.convert(
-                voice_id=voice_id,
-                text=segment['text'],
-                model_id="eleven_multilingual_v2",
-                voice_settings=voice_settings
-            )
+        except Exception as elevenlabs_error:
+            # ElevenLabs failed - likely free tier limit
+            logger.warning(f"ElevenLabs TTS failed: {str(elevenlabs_error)}")
             
-            segment_filename = f"{episode_id}_segment_{i}.mp3"
-            segment_path = AUDIO_DIR / segment_filename
-            
-            with open(segment_path, "wb") as audio_file:
-                for chunk in audio_generator:
-                    audio_file.write(chunk)
-            
-            audio_files.append(segment_filename)
-        
-        # For MVP, we'll return the first segment or concatenate later
-        # In production, use FFmpeg to concatenate audio files
-        final_audio_url = f"/api/audio/{audio_files[0]}" if audio_files else None
+            # Return detailed error message to user
+            error_detail = str(elevenlabs_error)
+            if "unusual_activity" in error_detail.lower() or "free tier" in error_detail.lower() or "401" in error_detail:
+                raise HTTPException(
+                    status_code=402,
+                    detail="ElevenLabs Free-Tier-Limit erreicht. Bitte verwenden Sie einen Paid Plan API-Key für die Audio-Generierung. Die Episode wurde gespeichert und kann später mit einem gültigen API-Key bearbeitet werden."
+                )
+            else:
+                raise HTTPException(
+                    status_code=500,
+                    detail=f"Audio-Generierung fehlgeschlagen: {error_detail}. Bitte überprüfen Sie Ihren ElevenLabs API-Key."
+                )
         
         # Update episode with audio URL
         await db.episodes.update_one(
@@ -488,6 +505,11 @@ async def generate_episode_audio(episode_id: str):
             "segments": len(audio_files)
         }
     except HTTPException:
+        # Re-raise HTTP exceptions
+        await db.episodes.update_one(
+            {"id": episode_id},
+            {"$set": {"status": "error"}}
+        )
         raise
     except Exception as e:
         logger.error(f"Error generating episode audio: {str(e)}")
@@ -496,7 +518,7 @@ async def generate_episode_audio(episode_id: str):
             {"id": episode_id},
             {"$set": {"status": "error"}}
         )
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail=f"Unerwarteter Fehler: {str(e)}")
 
 
 @api_router.get("/audio/{filename}")
