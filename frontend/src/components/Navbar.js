@@ -23,19 +23,31 @@ function Navbar() {
   const isActive = (path) => location.pathname === path;
 
   return (
-    <AppBar position="static" sx={{ mb: 4 }}>
-      <Toolbar>
+    <AppBar position="static" sx={{ mb: { xs: 2, md: 4 } }}>
+      <Toolbar sx={{ flexWrap: { xs: 'wrap', md: 'nowrap' }, py: { xs: 1, md: 2 } }}>
         <Typography
           variant="h5"
           component="div"
-          sx={{ flexGrow: 0, mr: 4, cursor: 'pointer', fontWeight: 700 }}
+          sx={{ 
+            flexGrow: 0, 
+            mr: { xs: 1, md: 4 }, 
+            cursor: 'pointer', 
+            fontWeight: 700,
+            fontSize: { xs: '1rem', md: '1.5rem' },
+          }}
           onClick={() => navigate('/')}
           data-testid="app-title"
         >
-          🎧 Der Bazi mit Baraka
+          🎧 Der Bazi
         </Typography>
 
-        <Box sx={{ flexGrow: 1, display: 'flex', gap: 2 }}>
+        <Box sx={{ 
+          flexGrow: 1, 
+          display: 'flex', 
+          gap: { xs: 0.5, md: 2 },
+          flexWrap: { xs: 'wrap', md: 'nowrap' },
+          width: { xs: '100%', md: 'auto' },
+        }}>
           <Button
             color="inherit"
             startIcon={<DashboardIcon />}
