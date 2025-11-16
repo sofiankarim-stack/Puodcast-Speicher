@@ -518,26 +518,25 @@ async def chatgpt_suggestion(request: ChatGPTRequest):
     try:
         system_message = "Du bist ein hilfreicher Assistent für Podcast-Produzenten. Antworte auf Deutsch und sei kreativ aber präzise."
         
-        messages = [
-            {"role": "system", "content": system_message},
-            {"role": "user", "content": request.prompt}
-        ]
+        # Use Emergent LLM integration
+        chat = LlmChat(
+            api_key=emergent_llm_key,
+            session_id=str(uuid.uuid4()),
+            system_message=system_message
+        ).with_model("openai", "gpt-4o-mini")
         
+        # Create prompt with context
+        prompt_text = request.prompt
         if request.context:
-            messages.insert(1, {"role": "user", "content": f"Kontext: {request.context}"})
+            prompt_text = f"Kontext: {request.context}\\n\\n{request.prompt}"
         
-        response = openai_client.chat.completions.create(
-            model="gpt-4",
-            messages=messages,
-            temperature=0.7,
-            max_tokens=500
-        )
+        user_message = UserMessage(text=prompt_text)
+        response = await chat.send_message(user_message)
         
-        suggestion = response.choices[0].message.content
         logger.info("ChatGPT suggestion generated")
         
         return {
-            "suggestion": suggestion,
+            "suggestion": response,
             "prompt": request.prompt
         }
     except Exception as e:
