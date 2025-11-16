@@ -34,6 +34,7 @@ import {
 import { getMusicLibrary, enhanceAudio } from '../api';
 import AudioEditor from './AudioEditor';
 import VideoEditor from './VideoEditor';
+import Recorder from './Recorder';
 import { trimVideo } from '../api';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
