@@ -40,6 +40,7 @@ function MediaLibrary({ onSelectFile }) {
   const [loading, setLoading] = useState(true);
   const [selectedFile, setSelectedFile] = useState(null);
   const [editDialogOpen, setEditDialogOpen] = useState(false);
+  const [dialogTab, setDialogTab] = useState(0);
   const [enhanceSettings, setEnhanceSettings] = useState({
     removeNoise: true,
     normalize: true,
