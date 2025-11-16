@@ -84,12 +84,26 @@ function MediaLibrary({ onSelectFile }) {
   const handleEnhance = async () => {
     if (!selectedFile) return;
     
+    // Check if file is audio
+    const isAudio = selectedFile.name?.toLowerCase().match(/\\.(mp3|wav|ogg|aac|m4a)$/);
+    if (!isAudio) {
+      setMessage({ 
+        type: 'warning', 
+        text: 'Audio-Optimierung ist nur für Audio-Dateien verfügbar. Für Videos verwenden Sie bitte den Video-Editor.' 
+      });
+      return;
+    }
+    
     setMessage({ type: 'info', text: 'Audio wird optimiert...' });
     
     try {
       const response = await enhanceAudio({
         file_id: selectedFile.id,
-        ...enhanceSettings,
+        remove_noise: enhanceSettings.removeNoise,
+        normalize: enhanceSettings.normalize,
+        compression: enhanceSettings.compression,
+        bass_boost: enhanceSettings.bassBoost,
+        treble_boost: enhanceSettings.trebleBoost,
       });
       
       setMessage({ type: 'success', text: response.data.message || 'Audio-Qualität erfolgreich verbessert!' });
@@ -99,7 +113,8 @@ function MediaLibrary({ onSelectFile }) {
       }, 1500);
     } catch (error) {
       console.error('Enhancement error:', error);
-      setMessage({ type: 'error', text: 'Fehler bei der Audio-Optimierung' });
+      const errorMsg = error.response?.data?.detail || 'Fehler bei der Audio-Optimierung. Bitte versuchen Sie es erneut.';
+      setMessage({ type: 'error', text: errorMsg });
     }
   };
 
