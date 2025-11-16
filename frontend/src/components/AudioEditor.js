@@ -30,37 +30,46 @@ function AudioEditor({ audioUrl, onSave }) {
 
   useEffect(() => {
     if (waveformRef.current && audioUrl) {
-      // Initialize WaveSurfer
-      wavesurfer.current = WaveSurfer.create({
-        container: waveformRef.current,
-        waveColor: '#FF6B35',
-        progressColor: '#003DA5',
-        cursorColor: '#FFFFFF',
-        barWidth: 3,
-        barRadius: 3,
-        cursorWidth: 2,
-        height: 100,
-        barGap: 2,
-      });
+      try {
+        // Initialize WaveSurfer
+        wavesurfer.current = WaveSurfer.create({
+          container: waveformRef.current,
+          waveColor: '#FF6B35',
+          progressColor: '#003DA5',
+          cursorColor: '#FFFFFF',
+          barWidth: 3,
+          barRadius: 3,
+          cursorWidth: 2,
+          height: 100,
+          barGap: 2,
+          normalize: true,
+        });
 
-      wavesurfer.current.load(audioUrl);
+        wavesurfer.current.load(audioUrl);
 
-      wavesurfer.current.on('ready', () => {
-        setDuration(wavesurfer.current.getDuration());
-      });
+        wavesurfer.current.on('ready', () => {
+          setDuration(wavesurfer.current.getDuration());
+        });
 
-      wavesurfer.current.on('audioprocess', () => {
-        setCurrentTime(wavesurfer.current.getCurrentTime());
-      });
+        wavesurfer.current.on('audioprocess', () => {
+          setCurrentTime(wavesurfer.current.getCurrentTime());
+        });
 
-      wavesurfer.current.on('play', () => setPlaying(true));
-      wavesurfer.current.on('pause', () => setPlaying(false));
+        wavesurfer.current.on('play', () => setPlaying(true));
+        wavesurfer.current.on('pause', () => setPlaying(false));
 
-      return () => {
-        if (wavesurfer.current) {
-          wavesurfer.current.destroy();
-        }
-      };
+        return () => {
+          try {
+            if (wavesurfer.current) {
+              wavesurfer.current.destroy();
+            }
+          } catch (err) {
+            console.error('Error destroying wavesurfer:', err);
+          }
+        };
+      } catch (error) {
+        console.error('Error initializing WaveSurfer:', error);
+      }
     }
   }, [audioUrl]);
 
