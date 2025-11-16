@@ -448,10 +448,10 @@ async def generate_episode_audio(episode_id: str):
             )
             
             logger.info(f"Generating segment {i+1}/{len(segments)} with voice: {segment['speaker']}")
-            audio_generator = elevenlabs_client.generate(
+            audio_generator = elevenlabs_client.text_to_speech.convert(
+                voice_id=voice_id,
                 text=segment['text'],
-                voice=voice_id,
-                model="eleven_multilingual_v2",
+                model_id="eleven_multilingual_v2",
                 voice_settings=voice_settings
             )
             
