@@ -46,7 +46,6 @@ export const getMusicLibrary = (category) => api.get('/music', { params: { categ
 
 // Media Enhancement
 export const enhanceAudio = (data) => api.post('/media/enhance-audio', data);
-export const trimVideo = (fileId, trimStart, trimEnd) => 
-  api.post(`/media/trim-video/${fileId}?trim_start=${trimStart}&trim_end=${trimEnd}`);
+export const trimVideo = (data) => api.post('/media/trim-video', null, { params: data });
 
 export default api;
