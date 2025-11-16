@@ -276,7 +276,13 @@ function VideoEditor({ videoUrl, onSave }) {
             <Button
               variant="contained"
               color="primary"
-              onClick={() => onSave({ trimStart, trimEnd, volume })}
+              onClick={() => onSave({ 
+                trimStart, 
+                trimEnd, 
+                volume,
+                musicVolume,
+                voiceVolume 
+              })}
               data-testid="save-video-edits"
               fullWidth
             >
