@@ -10,8 +10,8 @@ from pydantic import BaseModel, Field, ConfigDict
 from typing import List, Optional, Dict, Any
 import uuid
 from datetime import datetime, timezone
-from openai import OpenAI
 from elevenlabs import ElevenLabs, VoiceSettings
+from emergentintegrations.llm.chat import LlmChat, UserMessage
 import aiofiles
 import json
 
@@ -23,9 +23,11 @@ mongo_url = os.environ['MONGO_URL']
 client = AsyncIOMotorClient(mongo_url)
 db = client[os.environ['DB_NAME']]
 
-# API Clients
-openai_client = OpenAI(api_key=os.environ.get('OPENAI_API_KEY'))
+# API Clients  
 elevenlabs_client = ElevenLabs(api_key=os.environ.get('ELEVENLABS_API_KEY'))
+
+# Emergent LLM integration
+emergent_llm_key = os.environ.get('EMERGENT_LLM_KEY')
 
 # Create audio storage directory
 AUDIO_DIR = ROOT_DIR / "audio_files"
