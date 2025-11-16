@@ -146,7 +146,16 @@ function EpisodeEditor() {
       }
     } catch (error) {
       console.error('Error generating audio:', error);
-      setMessage({ type: 'error', text: 'Fehler bei der Audio-Generierung' });
+      
+      // Show detailed error message
+      let errorMessage = 'Fehler bei der Audio-Generierung';
+      if (error.response?.data?.detail) {
+        errorMessage = error.response.data.detail;
+      } else if (error.response?.status === 402) {
+        errorMessage = 'ElevenLabs Free-Tier-Limit erreicht. Bitte verwenden Sie einen Paid Plan API-Key.';
+      }
+      
+      setMessage({ type: 'error', text: errorMessage });
     } finally {
       setGenerating(false);
     }
