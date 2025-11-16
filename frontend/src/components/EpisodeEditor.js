@@ -17,12 +17,16 @@ import {
   CircularProgress,
   Alert,
   IconButton,
+  Tabs,
+  Tab,
 } from '@mui/material';
 import {
   Save as SaveIcon,
   VolumeUp as VolumeIcon,
   Lightbulb as LightbulbIcon,
   ArrowBack as ArrowBackIcon,
+  Edit as EditIcon,
+  CloudUpload as UploadIcon,
 } from '@mui/icons-material';
 import { useNavigate, useParams } from 'react-router-dom';
 import {
@@ -34,6 +38,8 @@ import {
   generateEpisodeAudio,
   getChatGPTSuggestion,
 } from '../api';
+import AudioEditor from './AudioEditor';
+import FileUploader from './FileUploader';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 
