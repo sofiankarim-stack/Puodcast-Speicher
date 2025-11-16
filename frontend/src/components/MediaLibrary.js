@@ -75,6 +75,7 @@ function MediaLibrary({ onSelectFile }) {
 
   const handleEdit = (file) => {
     setSelectedFile(file);
+    setDialogTab(0); // Reset to preview tab
     setEditDialogOpen(true);
   };
 
