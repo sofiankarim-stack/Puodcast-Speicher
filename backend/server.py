@@ -386,10 +386,10 @@ async def generate_tts(request: TTSRequest):
         
         # Generate audio
         logger.info(f"Generating TTS with voice: {request.voice}")
-        audio_generator = elevenlabs_client.generate(
+        audio_generator = elevenlabs_client.text_to_speech.convert(
+            voice_id=voice_id,
             text=request.text,
-            voice=voice_id,
-            model="eleven_multilingual_v2",
+            model_id="eleven_multilingual_v2",
             voice_settings=voice_settings
         )
         
