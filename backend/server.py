@@ -701,32 +701,50 @@ async def get_episode_analytics(episode_id: str):
 
 @api_router.post("/music/upload")
 async def upload_music(file: UploadFile = File(...), category: str = "background"):
-    """Upload music or sound effects"""
+    """Upload audio, video, or image files"""
     try:
-        # Save file
-        music_filename = f"{uuid.uuid4()}_{file.filename}"
-        music_path = AUDIO_DIR / music_filename
+        # Determine file type and storage directory
+        content_type = file.content_type or ''
         
-        async with aiofiles.open(music_path, 'wb') as out_file:
+        if content_type.startswith('audio/'):
+            storage_dir = AUDIO_DIR
+            url_prefix = '/api/audio'
+        elif content_type.startswith('video/'):
+            storage_dir = VIDEO_DIR
+            url_prefix = '/api/video'
+        elif content_type.startswith('image/'):
+            storage_dir = IMAGE_DIR
+            url_prefix = '/api/image'
+        else:
+            # Default to audio
+            storage_dir = AUDIO_DIR
+            url_prefix = '/api/audio'
+        
+        # Save file
+        file_filename = f"{uuid.uuid4()}_{file.filename}"
+        file_path = storage_dir / file_filename
+        
+        async with aiofiles.open(file_path, 'wb') as out_file:
             content = await file.read()
             await out_file.write(content)
         
-        # Create music entry
-        music_file = MusicFile(
+        # Create file entry
+        media_file = MusicFile(
             name=file.filename,
-            file_url=f"/api/audio/{music_filename}",
+            file_url=f"{url_prefix}/{file_filename}",
             category=category
         )
         
-        doc = music_file.model_dump()
+        doc = media_file.model_dump()
         doc['created_at'] = doc['created_at'].isoformat()
+        doc['content_type'] = content_type
         
         await db.music_library.insert_one(doc)
-        logger.info(f"Music file uploaded: {file.filename}")
+        logger.info(f"Media file uploaded: {file.filename} ({content_type})")
         
-        return music_file
+        return media_file
     except Exception as e:
-        logger.error(f"Error uploading music: {str(e)}")
+        logger.error(f"Error uploading file: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
 
 
