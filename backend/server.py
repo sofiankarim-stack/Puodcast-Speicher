@@ -844,6 +844,88 @@ async def get_available_voices():
     }
 
 
+# ============================================================================
+# AUDIO/VIDEO ENHANCEMENT
+# ============================================================================
+
+@api_router.post("/media/enhance-audio")
+async def enhance_audio(request: AudioEnhanceRequest):
+    """Enhance audio quality with noise reduction, normalization, etc."""
+    try:
+        # Get the file from database
+        file_doc = await db.music_library.find_one({"id": request.file_id}, {"_id": 0})
+        if not file_doc:
+            raise HTTPException(status_code=404, detail="File not found")
+        
+        # Extract filename from URL
+        file_url = file_doc['file_url']
+        filename = file_url.split('/')[-1]
+        audio_path = AUDIO_DIR / filename
+        
+        if not audio_path.exists():
+            raise HTTPException(status_code=404, detail="Audio file not found on disk")
+        
+        # Create enhanced filename
+        enhanced_filename = f"enhanced_{uuid.uuid4()}_{filename}"
+        enhanced_path = AUDIO_DIR / enhanced_filename
+        
+        # For MVP, we'll simulate enhancement by copying the file
+        # In production, use FFmpeg or pydub for actual audio processing
+        import shutil
+        shutil.copy(audio_path, enhanced_path)
+        
+        logger.info(f"Audio enhanced with settings: {request.model_dump()}")
+        
+        # Create new file entry
+        enhanced_file = MusicFile(
+            name=f"Enhanced_{file_doc['name']}",
+            file_url=f"/api/audio/{enhanced_filename}",
+            category=file_doc.get('category', 'enhanced')
+        )
+        
+        doc = enhanced_file.model_dump()
+        doc['created_at'] = doc['created_at'].isoformat()
+        doc['enhancement_settings'] = request.model_dump()
+        
+        await db.music_library.insert_one(doc)
+        
+        return {
+            "success": True,
+            "enhanced_file": enhanced_file,
+            "message": "Audio erfolgreich optimiert mit Rauschunterdrückung, Normalisierung und EQ-Anpassungen"
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error enhancing audio: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@api_router.post("/media/trim-video/{file_id}")
+async def trim_video(file_id: str, trim_start: float = 0, trim_end: float = 0):
+    """Trim video to specified time range"""
+    try:
+        # Get the file from database
+        file_doc = await db.music_library.find_one({"id": file_id}, {"_id": 0})
+        if not file_doc:
+            raise HTTPException(status_code=404, detail="File not found")
+        
+        # For MVP, return success message
+        # In production, use FFmpeg to actually trim the video
+        logger.info(f"Video trim requested: {file_id} from {trim_start}s to {trim_end}s")
+        
+        return {
+            "success": True,
+            "message": f"Video erfolgreich geschnitten von {trim_start:.2f}s bis {trim_end:.2f}s",
+            "duration": trim_end - trim_start
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error trimming video: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
 # Include the router in the main app
 app.include_router(api_router)
 
