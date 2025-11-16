@@ -46,11 +46,11 @@ function Dashboard() {
   }
 
   return (
-    <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
-      <Typography variant="h3" gutterBottom data-testid="dashboard-title">
+    <Container maxWidth="lg" sx={{ mt: { xs: 2, md: 4 }, mb: { xs: 2, md: 4 }, px: { xs: 2, md: 3 } }}>
+      <Typography variant="h3" gutterBottom data-testid="dashboard-title" sx={{ fontSize: { xs: '1.75rem', md: '3rem' } }}>
         Dashboard
       </Typography>
-      <Typography variant="subtitle1" color="text.secondary" gutterBottom>
+      <Typography variant="subtitle1" color="text.secondary" gutterBottom sx={{ fontSize: { xs: '0.875rem', md: '1rem' } }}>
         Der Bazi mit Baraka - Podcast Produktionsplattform
       </Typography>
 
