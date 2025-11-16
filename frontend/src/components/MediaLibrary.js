@@ -335,9 +335,29 @@ function MediaLibrary({ onSelectFile }) {
                   </Typography>
                   <VideoEditor
                     videoUrl={`${BACKEND_URL}${selectedFile.file_url}`}
-                    onSave={(edits) => {
-                      console.log('Video edits:', edits);
-                      setMessage({ type: 'success', text: 'Video-Änderungen gespeichert!' });
+                    onSave={async (edits) => {
+                      try {
+                        setMessage({ type: 'info', text: 'Video wird verarbeitet... Dies kann einige Minuten dauern.' });
+                        
+                        const response = await trimVideo({
+                          file_id: selectedFile.id,
+                          trim_start: edits.trimStart,
+                          trim_end: edits.trimEnd,
+                          music_volume: edits.musicVolume,
+                          voice_volume: edits.voiceVolume
+                        });
+                        
+                        setMessage({ type: 'success', text: response.data.message || 'Video erfolgreich bearbeitet!' });
+                        loadFiles(); // Reload to show processed video
+                        
+                        setTimeout(() => {
+                          setEditDialogOpen(false);
+                        }, 2000);
+                      } catch (error) {
+                        console.error('Video processing error:', error);
+                        const errorMsg = error.response?.data?.detail || 'Fehler bei der Video-Verarbeitung';
+                        setMessage({ type: 'error', text: errorMsg });
+                      }
                     }}
                   />
                 </Box>
