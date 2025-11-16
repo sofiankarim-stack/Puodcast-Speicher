@@ -94,7 +94,7 @@ class EpisodeCreate(BaseModel):
     text_content: str
     metadata: EpisodeMetadata
     selected_voice: Optional[str] = "markus"
-    voice_settings: Optional[VoiceSettingsModel] = None
+    voice_settings: Optional[VoiceSettingsModel] = Field(default_factory=VoiceSettingsModel)
     speaker_segments: Optional[List[SpeakerSegment]] = []
 
 class EpisodeUpdate(BaseModel):
