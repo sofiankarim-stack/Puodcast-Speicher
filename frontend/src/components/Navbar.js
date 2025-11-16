@@ -12,6 +12,7 @@ import {
   LibraryMusic as LibraryMusicIcon,
   Settings as SettingsIcon,
   PermMedia as MediaIcon,
+  Publish as PublishIcon,
 } from '@mui/icons-material';
 import { useNavigate, useLocation } from 'react-router-dom';
 
