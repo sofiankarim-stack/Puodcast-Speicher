@@ -11,6 +11,7 @@ import {
   Dashboard as DashboardIcon,
   LibraryMusic as LibraryMusicIcon,
   Settings as SettingsIcon,
+  PermMedia as MediaIcon,
 } from '@mui/icons-material';
 import { useNavigate, useLocation } from 'react-router-dom';
 
