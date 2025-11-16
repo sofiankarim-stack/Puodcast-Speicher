@@ -142,6 +142,16 @@ function MediaLibrary({ onSelectFile }) {
         </Alert>
       )}
 
+      {/* Recorder Component */}
+      <Box sx={{ mb: 4 }}>
+        <Recorder
+          onRecordingComplete={(file) => {
+            setMessage({ type: 'success', text: `Aufnahme gespeichert: ${file.name}` });
+            loadFiles(); // Reload files to show new recording
+          }}
+        />
+      </Box>
+
       {loading ? (
         <Typography>Lädt...</Typography>
       ) : files.length === 0 ? (
