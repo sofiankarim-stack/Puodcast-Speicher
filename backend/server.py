@@ -29,9 +29,15 @@ elevenlabs_client = ElevenLabs(api_key=os.environ.get('ELEVENLABS_API_KEY'))
 # Emergent LLM integration
 emergent_llm_key = os.environ.get('EMERGENT_LLM_KEY')
 
-# Create audio storage directory
+# Create media storage directories
 AUDIO_DIR = ROOT_DIR / "audio_files"
 AUDIO_DIR.mkdir(exist_ok=True)
+
+VIDEO_DIR = ROOT_DIR / "video_files"
+VIDEO_DIR.mkdir(exist_ok=True)
+
+IMAGE_DIR = ROOT_DIR / "image_files"
+IMAGE_DIR.mkdir(exist_ok=True)
 
 # Create the main app
 app = FastAPI()
