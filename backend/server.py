@@ -159,10 +159,10 @@ class AudioEnhanceRequest(BaseModel):
 # ============================================================================
 
 VOICE_MAPPING = {
-    "markus": "21m00Tcm4TlvDq8ikWAM",  # Rachel - will use for Bavarian neutral
-    "klaus": "AZnzlk1XvdvUeBnXmlld",   # Domi - warm
-    "franz": "ErXwobaYiN019PkySvjV",   # Antoni - authoritative
-    "josef": "VR6AewLTigWG4xSOukaG",   # Arnold - regional
+    "markus": "CwhRBWXzGAHq8TQ4Fs17",  # Roger - American male, classy, professional
+    "klaus": "TX3LPaxmHKxFdv7VOQHJ",   # Liam - American male, confident, young
+    "franz": "JBFqnCBsd6RMkjVDRZzb",   # George - British male, mature, narrative
+    "josef": "IKne3meq5aSn9XLyUdCD",   # Charlie - Australian male, hyped, young
 }
 
 
