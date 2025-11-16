@@ -901,24 +901,100 @@ async def enhance_audio(request: AudioEnhanceRequest):
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@api_router.post("/media/trim-video/{file_id}")
-async def trim_video(file_id: str, trim_start: float = 0, trim_end: float = 0):
-    """Trim video to specified time range"""
+@api_router.post("/media/trim-video")
+async def trim_video(
+    file_id: str,
+    trim_start: float = 0,
+    trim_end: float = 0,
+    music_volume: float = 1.0,
+    voice_volume: float = 1.0
+):
+    """Trim video and apply audio mixing"""
     try:
+        import ffmpeg
+        import subprocess
+        
         # Get the file from database
         file_doc = await db.music_library.find_one({"id": file_id}, {"_id": 0})
         if not file_doc:
             raise HTTPException(status_code=404, detail="File not found")
         
-        # For MVP, return success message
-        # In production, use FFmpeg to actually trim the video
-        logger.info(f"Video trim requested: {file_id} from {trim_start}s to {trim_end}s")
+        # Extract filename from URL
+        file_url = file_doc['file_url']
+        filename = file_url.split('/')[-1]
         
-        return {
-            "success": True,
-            "message": f"Video erfolgreich geschnitten von {trim_start:.2f}s bis {trim_end:.2f}s",
-            "duration": trim_end - trim_start
-        }
+        # Determine input directory based on file type
+        if '/video/' in file_url:
+            input_path = VIDEO_DIR / filename
+        else:
+            input_path = AUDIO_DIR / filename
+        
+        if not input_path.exists():
+            raise HTTPException(status_code=404, detail="Video file not found on disk")
+        
+        # Create output filename
+        output_filename = f"edited_{uuid.uuid4()}.mp4"
+        output_path = VIDEO_DIR / output_filename
+        
+        logger.info(f"Processing video: {filename}")
+        logger.info(f"Trim: {trim_start}s to {trim_end}s")
+        logger.info(f"Audio mixing: music={music_volume}, voice={voice_volume}")
+        
+        try:
+            # Use FFmpeg to trim and process audio
+            # Build FFmpeg command
+            cmd = [
+                'ffmpeg',
+                '-i', str(input_path),
+                '-ss', str(trim_start),
+                '-t', str(trim_end - trim_start) if trim_end > trim_start else '0',
+                '-c:v', 'copy',  # Copy video codec (faster)
+                '-af', f'volume={voice_volume}',  # Apply volume to audio
+                '-y',  # Overwrite output file
+                str(output_path)
+            ]
+            
+            # Execute FFmpeg
+            result = subprocess.run(cmd, capture_output=True, text=True, timeout=60)
+            
+            if result.returncode != 0:
+                logger.error(f"FFmpeg error: {result.stderr}")
+                raise Exception(f"Video processing failed: {result.stderr[:200]}")
+            
+            logger.info(f"Video processed successfully: {output_filename}")
+            
+            # Create new file entry
+            processed_file = MusicFile(
+                name=f"Edited_{file_doc['name']}",
+                file_url=f"/api/video/{output_filename}",
+                category='edited'
+            )
+            
+            doc = processed_file.model_dump()
+            doc['created_at'] = doc['created_at'].isoformat()
+            doc['original_file_id'] = file_id
+            doc['edit_settings'] = {
+                'trim_start': trim_start,
+                'trim_end': trim_end,
+                'music_volume': music_volume,
+                'voice_volume': voice_volume
+            }
+            
+            await db.music_library.insert_one(doc)
+            
+            return {
+                "success": True,
+                "message": f"Video erfolgreich bearbeitet! Dauer: {trim_end - trim_start:.1f}s",
+                "processed_file": processed_file,
+                "duration": trim_end - trim_start
+            }
+            
+        except subprocess.TimeoutExpired:
+            raise HTTPException(status_code=408, detail="Video processing timeout")
+        except Exception as ffmpeg_error:
+            logger.error(f"FFmpeg processing error: {str(ffmpeg_error)}")
+            raise HTTPException(status_code=500, detail=f"Video processing error: {str(ffmpeg_error)}")
+            
     except HTTPException:
         raise
     except Exception as e:
