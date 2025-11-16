@@ -7,6 +7,7 @@ import Dashboard from './components/Dashboard';
 import EpisodeList from './components/EpisodeList';
 import EpisodeEditor from './components/EpisodeEditor';
 import MediaLibrary from './components/MediaLibrary';
+import Distribution from './components/Distribution';
 import './App.css';
 
 function App() {
@@ -21,6 +22,7 @@ function App() {
           <Route path="/episodes/new" element={<EpisodeEditor />} />
           <Route path="/episodes/:id" element={<EpisodeEditor />} />
           <Route path="/media" element={<MediaLibrary />} />
+          <Route path="/distribution" element={<Distribution />} />
         </Routes>
       </BrowserRouter>
     </ThemeProvider>
