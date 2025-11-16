@@ -54,6 +54,8 @@ function EpisodeEditor() {
   const [voices, setVoices] = useState([]);
   const [audioUrl, setAudioUrl] = useState(null);
   const [message, setMessage] = useState(null);
+  const [currentTab, setCurrentTab] = useState(0);
+  const [uploadedFiles, setUploadedFiles] = useState([]);
 
   const [formData, setFormData] = useState({
     text_content: '',
