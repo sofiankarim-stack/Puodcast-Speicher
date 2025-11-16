@@ -6,6 +6,7 @@ import Navbar from './components/Navbar';
 import Dashboard from './components/Dashboard';
 import EpisodeList from './components/EpisodeList';
 import EpisodeEditor from './components/EpisodeEditor';
+import MediaLibrary from './components/MediaLibrary';
 import './App.css';
 
 function App() {
@@ -19,6 +20,7 @@ function App() {
           <Route path="/episodes" element={<EpisodeList />} />
           <Route path="/episodes/new" element={<EpisodeEditor />} />
           <Route path="/episodes/:id" element={<EpisodeEditor />} />
+          <Route path="/media" element={<MediaLibrary />} />
         </Routes>
       </BrowserRouter>
     </ThemeProvider>
