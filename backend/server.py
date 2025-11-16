@@ -942,17 +942,33 @@ async def trim_video(
         
         try:
             # Use FFmpeg to trim and process audio
+            # Calculate duration
+            duration = max(0, trim_end - trim_start) if trim_end > trim_start else 0
+            
             # Build FFmpeg command
-            cmd = [
-                'ffmpeg',
-                '-i', str(input_path),
-                '-ss', str(trim_start),
-                '-t', str(trim_end - trim_start) if trim_end > trim_start else '0',
-                '-c:v', 'copy',  # Copy video codec (faster)
-                '-af', f'volume={voice_volume}',  # Apply volume to audio
-                '-y',  # Overwrite output file
-                str(output_path)
-            ]
+            if duration > 0:
+                cmd = [
+                    'ffmpeg',
+                    '-i', str(input_path),
+                    '-ss', str(trim_start),
+                    '-t', str(duration),
+                    '-vcodec', 'libx264',  # Re-encode video for compatibility
+                    '-acodec', 'aac',  # Re-encode audio
+                    '-af', f'volume={voice_volume}',  # Apply volume to audio
+                    '-y',  # Overwrite output file
+                    str(output_path)
+                ]
+            else:
+                # No trimming, just process audio
+                cmd = [
+                    'ffmpeg',
+                    '-i', str(input_path),
+                    '-vcodec', 'copy',
+                    '-acodec', 'aac',
+                    '-af', f'volume={voice_volume}',
+                    '-y',
+                    str(output_path)
+                ]
             
             # Execute FFmpeg
             result = subprocess.run(cmd, capture_output=True, text=True, timeout=60)
