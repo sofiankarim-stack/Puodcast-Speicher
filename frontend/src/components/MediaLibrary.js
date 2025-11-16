@@ -245,7 +245,15 @@ function MediaLibrary({ onSelectFile }) {
         <DialogContent>
           {selectedFile && selectedFile.file_url && (
             <Box>
-              {/* Preview Section */}
+              {/* Tabs */}
+              <Tabs value={dialogTab} onChange={(e, val) => setDialogTab(val)} sx={{ mb: 3, borderBottom: 1, borderColor: 'divider' }}>
+                <Tab label="Vorschau" data-testid="preview-tab" />
+                <Tab label="Bearbeiten" data-testid="edit-tab" />
+                <Tab label="Qualität" data-testid="quality-tab" />
+              </Tabs>
+
+              {/* Tab 0: Preview Section */}
+              {dialogTab === 0 && (
               <Box mb={3}>
                 <Typography variant="h6" gutterBottom>
                   Vorschau
