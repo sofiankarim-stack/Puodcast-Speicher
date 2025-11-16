@@ -57,6 +57,17 @@ function Navbar() {
           >
             Episoden
           </Button>
+          <Button
+            color="inherit"
+            startIcon={<MediaIcon />}
+            onClick={() => navigate('/media')}
+            sx={{
+              bgcolor: isActive('/media') ? 'rgba(255,255,255,0.1)' : 'transparent',
+            }}
+            data-testid="nav-media"
+          >
+            Medien
+          </Button>
         </Box>
 
         <IconButton color="inherit" data-testid="nav-settings">
