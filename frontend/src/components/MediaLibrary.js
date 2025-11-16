@@ -314,7 +314,7 @@ function MediaLibrary({ onSelectFile }) {
           <Button onClick={() => setEditDialogOpen(false)}>Schließen</Button>
         </DialogActions>
       </Dialog>
-    </Box>
+    </Container>
   );
 }
 
